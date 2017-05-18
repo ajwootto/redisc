@@ -285,6 +285,7 @@ func (c *Cluster) getRandomConn(forceDial, readOnly bool) (redis.Conn, string, e
 	perms := rnd.Perm(len(addrs))
 	rnd.Unlock()
 
+	var err error
 	for _, ix := range perms {
 		addr := addrs[ix]
 		conn, err := c.getConnForAddr(addr, forceDial)
@@ -295,7 +296,7 @@ func (c *Cluster) getRandomConn(forceDial, readOnly bool) (redis.Conn, string, e
 			return conn, addr, nil
 		}
 	}
-	return nil, "", errors.New("redisc: failed to get a connection")
+	return nil, "", errors.New("redisc: failed to get a connection: " + err.Error())
 }
 
 func (c *Cluster) getConn(preferredSlot int, forceDial, readOnly bool) (conn redis.Conn, addr string, err error) {
